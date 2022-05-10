@@ -17,7 +17,7 @@ class AlbumsLikesService {
         if (!result.rows[0].id) {
             throw new InvariantError('Gagal menyukai album');
         }
-        await this._cacheService.delete('musicdb:album-likes');
+        await this._cacheService.delete(`musicdb:${albumId}`);
         return 'Berhasil menyukai album';
     }
 
@@ -29,7 +29,7 @@ class AlbumsLikesService {
         if (!result.rows[0].id) {
             throw new InvariantError('Gagal untuk mengubah suka album');
         }
-        await this._cacheService.delete('musicdb:album-likes');
+        await this._cacheService.delete(`musicdb:${albumId}`);
         return 'Berhasil mengubah suka album';
     }
 
@@ -44,9 +44,9 @@ class AlbumsLikesService {
     async getAlbumsLikesById(albumId) {
         try {
             //  REVIEW
-            //  Tidak ada field yang membedakan antara cache album-likes
+            //  Tidak ada field yang membedakan antara cache ${albumId}
             //  untuk album yang berbeda, akibatnya nilai cache akan sama untuk semua album
-            const result = await this._cacheService.get('musicdb:album-likes');
+            const result = await this._cacheService.get(`musicdb:${albumId}`);
             return {
                 sourceData: 'cache',
                 likes: JSON.parse(result),
@@ -58,7 +58,7 @@ class AlbumsLikesService {
             });
             const total = parseInt(result.rows[0].total, 10);
             await this._cacheService.set(
-                'musicdb:album-likes',
+                `musicdb:${albumId}`,
                 JSON.stringify(total),
             );
             return {
